@@ -1,0 +1,57 @@
+1.  venv setup
+
+pip install dbt-snowflake
+python -m venv .venv
+dir .\.venv\Scripts
+.\.venv\Scripts\Activate.ps1
+
+2. 
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+
+3. 
+pip install dbt-snowflake
+(create root dbt folder) mkdir %userprofile%\.dbt
+(create project) dbt init xxx
+Profile test written to C:\Users\User\.dbt\profiles.yml using target's profile_template.yml and your supplied values.
+nano profiles.yml
+
+4.
+dbt models are sql scripts that transform data
+models can reference other models
+first create staging files under models
+
+5. in dbt_project.yml,
+by default models are created as view (due to default materialization)
+
+
+6. scd (Slowly Changing Dimensions)
+e.g. customer email address, city WILL NOT change frequently
+for scd2, we maintain all change history, by using diff.methods
+ isActive/versionNumber/dataRange
+
+for scd3, we maintain partial history e.g. prev_city (nullable), current_city
+
+7. seeds (local files)
+8. sources.yml
+9. snapshots -- dbt snapshot
+10. surrogate keys
+11. packages.yml -- dbt deps
+
+12. tests -- dnt test
+Generic test: reusable tests (e.g. unique, not null, relationships, accepted values)
+Singular test: custom queries
+
+error/warn defined in yaml
+
+13. documentation -- dbt docs generate, serve
+14. macros
+
+
+
+ARCHITECURE:
+
+[Snowflake]
+raw (load from S3) -> staging (dbt models) -> DW (fact and dim. tables)
+
