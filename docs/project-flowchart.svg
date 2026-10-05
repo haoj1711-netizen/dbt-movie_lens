@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1560" viewBox="0 0 2200 1560" role="img" aria-labelledby="title desc">
+  <title id="title">dbt MovieLens Snowflake project flowchart</title>
+  <desc id="desc">Detailed data lineage from external MovieLens CSV ingestion to Snowflake raw tables, dbt staging, dimensions, facts, marts, a seed, a snapshot, and tests.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#ecfeff"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity=".12"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#475569"/></marker>
+    <marker id="arrowGap" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#7c3aed"/></marker>
+    <style>
+      .section{fill:#fff;stroke:#cbd5e1;stroke-width:2;rx:24;filter:url(#shadow)}.section-title{font:700 24px 'Segoe UI',Arial,sans-serif;fill:#334155}
+      .node{stroke-width:2;rx:16;filter:url(#shadow)}.external{fill:#eef2ff;stroke:#4f46e5}.raw{fill:#ecfeff;stroke:#0891b2}.stage{fill:#fff7ed;stroke:#f97316}.dw{fill:#f0fdf4;stroke:#16a34a}.quality{fill:#fdf4ff;stroke:#c026d3}.gap{fill:#faf5ff;stroke:#7c3aed;stroke-dasharray:8 6}
+      .h{font:700 18px 'Segoe UI',Arial,sans-serif;fill:#0f172a}.t{font:15px 'Segoe UI',Arial,sans-serif;fill:#334155}.small{font:13px 'Segoe UI',Arial,sans-serif;fill:#475569}.label{font:600 13px 'Segoe UI',Arial,sans-serif;fill:#475569}
+      .arrow{fill:none;stroke:#475569;stroke-width:3;marker-end:url(#arrow)}.dash{fill:none;stroke:#7c3aed;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#arrowGap)}
+    </style>
+  </defs>
+  <rect width="2200" height="1560" fill="url(#bg)"/>
+  <text x="70" y="66" style="font:800 36px 'Segoe UI',Arial,sans-serif;fill:#0f172a">dbt MovieLens on Snowflake — Project Flow</text>
+  <text x="70" y="101" style="font:17px 'Segoe UI',Arial,sans-serif;fill:#64748b">Repository-derived data lineage • solid = implemented dbt dependency • dashed purple = external setup or review issue</text>
+
+  <rect class="section" x="50" y="135" width="2100" height="260"/>
+  <text class="section-title" x="80" y="176">1 · Source acquisition and Snowflake raw layer</text>
+  <rect class="node external" x="85" y="220" width="330" height="120"/><text class="h" x="250" y="258" text-anchor="middle">MovieLens CSV files</text><text class="small" x="250" y="287" text-anchor="middle">movies • ratings • tags • links</text><text class="small" x="250" y="312" text-anchor="middle">genome-tags • genome-scores</text>
+  <rect class="node gap" x="510" y="210" width="330" height="140"/><text class="h" x="675" y="249" text-anchor="middle">External ingestion</text><text class="t" x="675" y="278" text-anchor="middle">not implemented in repository</text><text class="small" x="675" y="307" text-anchor="middle">notes imply S3 → Snowflake RAW</text><text class="small" x="675" y="332" text-anchor="middle">stage/COPY or connector required</text>
+  <path class="dash" d="M415 280 H510"/>
+  <rect class="node raw" x="935" y="200" width="270" height="80"/><text class="h" x="1070" y="235" text-anchor="middle">RAW_MOVIES</text><text class="small" x="1070" y="259" text-anchor="middle">movie metadata</text>
+  <rect class="node raw" x="935" y="295" width="270" height="80"/><text class="h" x="1070" y="330" text-anchor="middle">RAW_RATINGS</text><text class="small" x="1070" y="354" text-anchor="middle">user ratings</text>
+  <rect class="node raw" x="1270" y="200" width="270" height="80"/><text class="h" x="1405" y="235" text-anchor="middle">RAW_TAGS</text><text class="small" x="1405" y="259" text-anchor="middle">user-applied tags</text>
+  <rect class="node raw" x="1270" y="295" width="270" height="80"/><text class="h" x="1405" y="330" text-anchor="middle">RAW_LINKS</text><text class="small" x="1405" y="354" text-anchor="middle">IMDb / TMDB IDs</text>
+  <rect class="node raw" x="1605" y="200" width="270" height="80"/><text class="h" x="1740" y="235" text-anchor="middle">RAW_GENOME_TAGS</text><text class="small" x="1740" y="259" text-anchor="middle">genome tag labels</text>
+  <rect class="node raw" x="1605" y="295" width="270" height="80"/><text class="h" x="1740" y="330" text-anchor="middle">RAW_GENOME_SCORES</text><text class="small" x="1740" y="354" text-anchor="middle">movie/tag relevance</text>
+  <rect class="node raw" x="1930" y="225" width="170" height="125"/><text class="h" x="2015" y="263" text-anchor="middle">Location</text><text class="small" x="2015" y="292" text-anchor="middle">MOVIELENS</text><text class="small" x="2015" y="316" text-anchor="middle">.RAW</text><text class="small" x="2015" y="339" text-anchor="middle">six tables</text>
+  <path class="dash" d="M840 245 H900 V240 H935"/><path class="dash" d="M840 285 H880 V335 H935"/><path class="dash" d="M840 255 V188 H1405 V200"/><path class="dash" d="M840 305 V387 H1405 V375"/><path class="dash" d="M840 235 V178 H1740 V200"/><path class="dash" d="M840 325 V392 H1740 V375"/>
+
+  <rect class="section" x="50" y="430" width="2100" height="305"/>
+  <text class="section-title" x="80" y="472">2 · dbt staging models</text>
+  <rect class="node stage" x="90" y="535" width="295" height="130"/><text class="h" x="237" y="575" text-anchor="middle">src_movies</text><text class="t" x="237" y="605" text-anchor="middle">TABLE</text><text class="small" x="237" y="634" text-anchor="middle">movie ID, title, genres</text>
+  <rect class="node stage" x="430" y="535" width="295" height="130"/><text class="h" x="577" y="575" text-anchor="middle">src_ratings</text><text class="t" x="577" y="605" text-anchor="middle">TABLE</text><text class="small" x="577" y="634" text-anchor="middle">Unix → TIMESTAMP_LTZ</text>
+  <rect class="node stage" x="770" y="535" width="295" height="130"/><text class="h" x="917" y="575" text-anchor="middle">src_tags</text><text class="t" x="917" y="605" text-anchor="middle">TABLE</text><text class="small" x="917" y="634" text-anchor="middle">Unix → TIMESTAMP_LTZ</text>
+  <rect class="node stage" x="1110" y="535" width="295" height="130"/><text class="h" x="1257" y="575" text-anchor="middle">src_genome_tags</text><text class="t" x="1257" y="605" text-anchor="middle">VIEW</text><text class="small" x="1257" y="634" text-anchor="middle">tag ID + label</text>
+  <rect class="node stage" x="1450" y="535" width="295" height="130"/><text class="h" x="1597" y="575" text-anchor="middle">src_genome_score</text><text class="t" x="1597" y="605" text-anchor="middle">VIEW</text><text class="small" x="1597" y="634" text-anchor="middle">movie/tag relevance</text>
+  <rect class="node stage" x="1790" y="535" width="295" height="130"/><text class="h" x="1937" y="575" text-anchor="middle">src_links</text><text class="t" x="1937" y="605" text-anchor="middle">VIEW</text><text class="small" x="1937" y="634" text-anchor="middle">currently has no consumer</text>
+  <path class="arrow" d="M1070 280 V410 H237 V535"/><path class="arrow" d="M1070 375 V420 H577 V535"/><path class="arrow" d="M1405 280 V535"/><path class="arrow" d="M1740 280 V420 H1257 V535"/><path class="arrow" d="M1740 375 V450 H1597 V535"/><path class="arrow" d="M1405 375 V480 H1937 V535"/>
+  <rect class="node gap" x="90" y="680" width="1995" height="35"/><text class="small" x="1087" y="703" text-anchor="middle">Review note: sources.yml declares these raw tables, but staging SQL hard-codes MOVIELENS.RAW names instead of using source(), so dbt source lineage is bypassed.</text>
+
+  <rect class="section" x="50" y="770" width="2100" height="680"/>
+  <text class="section-title" x="80" y="812">3 · Dimensions, facts, mart, snapshot, and tests</text>
+  <rect class="node dw" x="90" y="880" width="300" height="135"/><text class="h" x="240" y="920" text-anchor="middle">dim_movies</text><text class="t" x="240" y="950" text-anchor="middle">TABLE</text><text class="small" x="240" y="978" text-anchor="middle">standardized title + genre array</text>
+  <rect class="node dw" x="90" y="1050" width="300" height="135"/><text class="h" x="240" y="1090" text-anchor="middle">dim_users</text><text class="t" x="240" y="1120" text-anchor="middle">TABLE</text><text class="small" x="240" y="1148" text-anchor="middle">distinct ratings ∪ tags users</text>
+  <rect class="node dw" x="90" y="1220" width="300" height="135"/><text class="h" x="240" y="1260" text-anchor="middle">dim_genome_tags</text><text class="t" x="240" y="1290" text-anchor="middle">TABLE</text><text class="small" x="240" y="1318" text-anchor="middle">cleaned tag names</text>
+  <path class="arrow" d="M237 665 V880"/><path class="arrow" d="M577 665 V780 H420 V1090 H390"/><path class="arrow" d="M917 665 V805 H450 V1145 H390"/><path class="arrow" d="M1257 665 V745 H62 V1287 H90"/>
+
+  <rect class="node dw" x="505" y="870" width="330" height="165"/><text class="h" x="670" y="910" text-anchor="middle">fct_ratings</text><text class="t" x="670" y="940" text-anchor="middle">INCREMENTAL</text><text class="small" x="670" y="968" text-anchor="middle">non-null rating rows</text><text class="small" x="670" y="993" text-anchor="middle">cursor: MAX(rating_timestamp)</text><text class="small" x="670" y="1018" text-anchor="middle">append behavior; no unique_key</text>
+  <rect class="node dw" x="505" y="1100" width="330" height="150"/><text class="h" x="670" y="1140" text-anchor="middle">fct_genome_scores</text><text class="t" x="670" y="1170" text-anchor="middle">TABLE</text><text class="small" x="670" y="1198" text-anchor="middle">relevance &gt; 0, rounded to 4 dp</text><text class="small" x="670" y="1223" text-anchor="middle">movie × genome-tag grain</text>
+  <path class="arrow" d="M577 665 V870"/><path class="arrow" d="M1597 665 C1597 800 670 800 670 1100"/>
+
+  <rect class="node stage" x="960" y="900" width="330" height="165"/><text class="h" x="1125" y="940" text-anchor="middle">dim_movies_with_tags</text><text class="t" x="1125" y="970" text-anchor="middle">EPHEMERAL</text><text class="small" x="1125" y="998" text-anchor="middle">movies LEFT JOIN scores LEFT JOIN tags</text><text class="small" x="1125" y="1023" text-anchor="middle">compiled inline; no relation created</text>
+  <rect class="node dw" x="960" y="1110" width="330" height="145"/><text class="h" x="1125" y="1150" text-anchor="middle">eph_movies_with_tags</text><text class="t" x="1125" y="1180" text-anchor="middle">TABLE</text><text class="small" x="1125" y="1208" text-anchor="middle">physical output despite “eph” name</text><text class="small" x="1125" y="1233" text-anchor="middle">selects ephemeral model</text>
+  <path class="arrow" d="M390 947 H960"/><path class="arrow" d="M390 1287 C700 1287 700 982 960 982"/><path class="arrow" d="M835 1175 C900 1175 900 1015 960 1015"/><path class="arrow" d="M1125 1065 V1110"/>
+
+  <rect class="node external" x="1410" y="855" width="330" height="115"/><text class="h" x="1575" y="895" text-anchor="middle">Release-date seed</text><text class="small" x="1575" y="924" text-anchor="middle">3 movie IDs; one blank date</text><text class="small" x="1575" y="949" text-anchor="middle">dbt seed creates a target table</text>
+  <rect class="node dw" x="1410" y="1010" width="330" height="160"/><text class="h" x="1575" y="1050" text-anchor="middle">mart_movie_releases</text><text class="t" x="1575" y="1080" text-anchor="middle">TABLE</text><text class="small" x="1575" y="1108" text-anchor="middle">ratings LEFT JOIN seed</text><text class="small" x="1575" y="1133" text-anchor="middle">adds known / unknown flag</text><text class="small" x="1575" y="1158" text-anchor="middle">does not select release_date</text>
+  <path class="arrow" d="M835 940 V835 H1345 V1090 H1410"/><path class="arrow" d="M1575 970 V1010"/>
+
+  <rect class="node quality" x="1810" y="855" width="300" height="180"/><text class="h" x="1960" y="895" text-anchor="middle">tags_snapshot</text><text class="t" x="1960" y="925" text-anchor="middle">timestamp SCD snapshot</text><text class="small" x="1960" y="953" text-anchor="middle">target: SNAPSHOTS schema</text><text class="small" x="1960" y="978" text-anchor="middle">hard deletes invalidated</text><text class="small" x="1960" y="1003" text-anchor="middle">LIMIT 100 without ORDER BY</text>
+  <path class="arrow" d="M917 665 C917 750 1960 750 1960 855"/>
+  <rect class="node quality" x="1810" y="1080" width="300" height="140"/><text class="h" x="1960" y="1120" text-anchor="middle">Generic tests</text><text class="small" x="1960" y="1149" text-anchor="middle">not-null assertions</text><text class="small" x="1960" y="1174" text-anchor="middle">ratings.movie_id → dim_movies</text><text class="small" x="1960" y="1199" text-anchor="middle">uniqueness tests are commented</text>
+  <rect class="node gap" x="1810" y="1260" width="300" height="140"/><text class="h" x="1960" y="1300" text-anchor="middle">Singular relevance test</text><text class="small" x="1960" y="1329" text-anchor="middle">trailing comma before FROM</text><text class="small" x="1960" y="1354" text-anchor="middle">condition ≤ 3 selects normal scores</text><text class="small" x="1960" y="1379" text-anchor="middle">requires correction</text>
+  <path class="arrow" d="M835 1175 H1810"/><path class="dash" d="M835 1200 C1300 1450 1700 1330 1810 1330"/>
+
+  <rect class="node gap" x="500" y="1305" width="1130" height="105"/><text class="h" x="1065" y="1342" text-anchor="middle">Required runtime configuration</text><text class="small" x="1065" y="1371" text-anchor="middle">project root test/ • ~/.dbt/profiles.yml profile “test” • Snowflake account/user/credential • role TRANSFORM • warehouse COMPUTE_WH</text><text class="small" x="1065" y="1396" text-anchor="middle">database MOVIELENS • separate RAW / analytics / SNAPSHOTS privileges • dbt-snowflake • dbt deps for dbt_utils 1.3.0</text>
+  <rect x="65" y="1475" width="2070" height="45" rx="12" fill="#f8fafc" stroke="#94a3b8"/><text class="small" x="1100" y="1503" text-anchor="middle">No scheduler, CI workflow, dashboard, or raw-file ingestion code is included. Those are external deployment decisions, not hidden parts of this repository.</text>
+</svg>

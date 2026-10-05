@@ -1,0 +1,85 @@
+flowchart TB
+  classDef external fill:#eef2ff,stroke:#4f46e5,color:#1e1b4b
+  classDef raw fill:#ecfeff,stroke:#0891b2,color:#164e63
+  classDef stage fill:#fff7ed,stroke:#f97316,color:#431407
+  classDef dw fill:#f0fdf4,stroke:#16a34a,color:#052e16
+  classDef quality fill:#fdf4ff,stroke:#c026d3,color:#4a044e
+  classDef gap fill:#faf5ff,stroke:#7c3aed,color:#3b0764,stroke-dasharray: 7 5
+
+  files[MovieLens CSV files\nmovies / ratings / tags / genome tags\ngenome scores / links]:::external
+  ingest[External ingestion\nS3/stage/COPY not implemented]:::gap
+  files -.-> ingest
+
+  subgraph rawLayer[Snowflake MOVIELENS.RAW]
+    movies[(RAW_MOVIES)]:::raw
+    ratings[(RAW_RATINGS)]:::raw
+    tags[(RAW_TAGS)]:::raw
+    genomeTags[(RAW_GENOME_TAGS)]:::raw
+    genomeScores[(RAW_GENOME_SCORES)]:::raw
+    links[(RAW_LINKS)]:::raw
+  end
+  ingest -.-> movies
+  ingest -.-> ratings
+  ingest -.-> tags
+  ingest -.-> genomeTags
+  ingest -.-> genomeScores
+  ingest -.-> links
+
+  subgraph staging[dbt staging]
+    srcMovies[src_movies\nTABLE]:::stage
+    srcRatings[src_ratings\nTABLE / timestamp conversion]:::stage
+    srcTags[src_tags\nTABLE / timestamp conversion]:::stage
+    srcGenomeTags[src_genome_tags\nVIEW]:::stage
+    srcGenomeScores[src_genome_score\nVIEW]:::stage
+    srcLinks[src_links\nVIEW / currently unused]:::stage
+  end
+  movies --> srcMovies
+  ratings --> srcRatings
+  tags --> srcTags
+  genomeTags --> srcGenomeTags
+  genomeScores --> srcGenomeScores
+  links --> srcLinks
+
+  subgraph warehouse[Dimensions, facts, and marts]
+    dimMovies[dim_movies\nTABLE / title + genre array]:::dw
+    dimUsers[dim_users\nTABLE / ratings ∪ tags users]:::dw
+    dimGenome[dim_genome_tags\nTABLE / cleaned tag labels]:::dw
+    fctRatings[fct_ratings\nINCREMENTAL / non-null ratings]:::dw
+    fctGenome[fct_genome_scores\nTABLE / relevance > 0]:::dw
+    ephemeral[dim_movies_with_tags\nEPHEMERAL join]:::stage
+    physical[eph_movies_with_tags\nTABLE despite its name]:::dw
+    seed[(seeds_movies_release_dates\n3 rows)]:::external
+    mart[mart_movie_releases\nTABLE / known vs unknown release date]:::dw
+  end
+  srcMovies --> dimMovies
+  srcRatings --> dimUsers
+  srcTags --> dimUsers
+  srcGenomeTags --> dimGenome
+  srcRatings --> fctRatings
+  srcGenomeScores --> fctGenome
+  dimMovies --> ephemeral
+  dimGenome --> ephemeral
+  fctGenome --> ephemeral
+  ephemeral --> physical
+  fctRatings --> mart
+  seed --> mart
+
+  srcTags --> snapshot[(SNAPSHOTS.TAGS_SNAPSHOT\nSCD timestamp strategy\nhard deletes invalidated\nLIMIT 100)]:::quality
+
+  subgraph tests[Quality tests]
+    generic[Generic schema tests\nnot-null + ratings→movies relationship]:::quality
+    singular[relevance_score_test\ncurrently malformed/incorrect]:::gap
+  end
+  dimMovies --> generic
+  dimUsers --> generic
+  dimGenome --> generic
+  fctRatings --> generic
+  fctGenome --> generic
+  fctGenome --> singular
+
+  profile[~/.dbt/profiles.yml\nSnowflake account / user / credential\nrole / warehouse / database / schema]:::gap
+  dbt[dbt CLI\nproject root: test/\ndbt_utils 1.3.0]:::external
+  profile -.-> dbt
+  dbt --> staging
+  dbt --> warehouse
+  dbt --> tests
